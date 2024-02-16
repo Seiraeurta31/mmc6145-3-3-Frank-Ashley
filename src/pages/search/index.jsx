@@ -1,12 +1,12 @@
 import BookPreview from "../../components/bookPreview";
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import styles from './style.module.css'
 
 export default function Search() {
   // stores search results
   const [bookSearchResults, setBookSearchResults] = useState()
   // stores value of input field
-  const [query, setQuery] = useState("")
+  const [query, setQuery] = useState("React")
   // compare to query to prevent repeat API calls
   const [previousQuery, setPreviousQuery] = useState()
   // used to prevent rage clicks on form submits
@@ -15,6 +15,14 @@ export default function Search() {
   // TODO: When the Search Page loads, use useEffect to fetch data from:
   // https://www.googleapis.com/books/v1/volumes?langRestrict=en&maxResults=16&q=YOUR_QUERY
   // Use a query of "React"
+  useEffect(() => {
+    async function getBooks() {
+      const res = await fetch(`https://www.googleapis.com/books/v1/volumes?langRestrict=en&maxResults=16&q=YOUR_QUERY`)
+      const data = await res.json()
+      setBookSearchResults(data)
+    }
+    getBooks()
+  }, [query])
 
   // TODO: Write a submit handler for the form that fetches data from:
   // https://www.googleapis.com/books/v1/volumes?langRestrict=en&maxResults=16&q=YOUR_QUERY
