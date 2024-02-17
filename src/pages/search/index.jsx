@@ -18,12 +18,13 @@ export default function Search() {
   useEffect(() => {
     async function getBooks(query) {
       
-      const res = await fetch(`https://www.googleapis.com/books/v1/volumes?langRestrict=en&maxResults=16&q=`+{query})
+      const res = await fetch(`https://www.googleapis.com/books/v1/volumes?langRestrict=en&maxResults=16&q=${query}`)
       const data = await res.json()
       setBookSearchResults(data) 
       console.log(bookSearchResults) 
       setFetching(false)
-    }
+    } 
+    if(query == "")return
     getBooks()
   }, [query])
 
@@ -36,13 +37,12 @@ export default function Search() {
 
   function handleSubmit(e) {
     e.preventDefault()
-    if (fetching == true || query == previousQuery)
+    if (fetching || query == previousQuery)
       return
     setFetching(true)
     setQuery(inputRef.current)
     getBooks(query)
   }
-
 
   const inputRef = useRef()
   const inputDivRef = useRef()
@@ -77,8 +77,8 @@ export default function Search() {
             {/* TODO: render BookPreview components for each search result here based on bookSearchResults */
               bookSearchResults.map((item, index) => (
                 <BookPreview key={index}
-                  title = {item.volumeInfo.title}
-                  authors = {item.volumeInfo.authors}
+                  title = {item[volumeInfo.title]}
+                  authors = {item[volumeInfo[authors]]}
                   thumbnail = {item.thumbnail}
                   previewLink = {item.previewLink}
                 /> 
