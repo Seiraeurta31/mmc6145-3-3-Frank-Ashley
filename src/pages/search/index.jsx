@@ -20,10 +20,11 @@ export default function Search() {
       const res = await fetch(`https://www.googleapis.com/books/v1/volumes?langRestrict=en&maxResults=16&q=`+{query})
       const data = await res.json()
       setBookSearchResults(data)
+      console.log(bookSearchResults)
       setFetching(false)
     }
     getBooks()
-  }, [])
+  }, [query])
 
   // TODO: Write a submit handler for the form that fetches data from:
   // https://www.googleapis.com/books/v1/volumes?langRestrict=en&maxResults=16&q=YOUR_QUERY
@@ -59,7 +60,7 @@ export default function Search() {
             name="book-search"
             id="book-search"
             value={query}
-            onChange={() => setQuery(value)}
+            onChange={(e) => setQuery(value)}
             />
           <button type="submit">Submit</button>
         </div>
