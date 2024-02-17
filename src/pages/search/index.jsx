@@ -16,13 +16,14 @@ export default function Search() {
   // https://www.googleapis.com/books/v1/volumes?langRestrict=en&maxResults=16&q=YOUR_QUERY
   // Use a query of "React"
   useEffect(() => {
-    async function getBooks() {
-      const res = await fetch(`https://www.googleapis.com/books/v1/volumes?langRestrict=en&maxResults=16&q=YOUR_QUERY`)
+    async function getBooks(query) {
+      const res = await fetch(`https://www.googleapis.com/books/v1/volumes?langRestrict=en&maxResults=16&q=`+{query})
       const data = await res.json()
       setBookSearchResults(data)
+      setFetching(false)
     }
     getBooks()
-  }, [query])
+  }, [])
 
   // TODO: Write a submit handler for the form that fetches data from:
   // https://www.googleapis.com/books/v1/volumes?langRestrict=en&maxResults=16&q=YOUR_QUERY
@@ -31,6 +32,16 @@ export default function Search() {
   // fetch has not finished
   // the query is unchanged
 
+  function handleSubmit(e) {
+    e.preventDefault()
+    if (fetching == true || query == previousQuery)
+      return
+    setFetching(true)
+    setQuery(inputRef.current)
+    getBooks(query)
+  }
+
+
   const inputRef = useRef()
   const inputDivRef = useRef()
 
@@ -38,7 +49,7 @@ export default function Search() {
     <main className={styles.search}>
       <h1>Book Search</h1>
       {/* TODO: add an onSubmit handler */}
-      <form className={styles.form}>
+      <form onSubmit={handleSubmit} className={styles.form}>
         <label htmlFor="book-search">Search by author, title, and/or keywords:</label>
         <div ref={inputDivRef}>
           {/* TODO: add value and onChange props to the input element based on query/setQuery */}
@@ -47,6 +58,8 @@ export default function Search() {
             type="text"
             name="book-search"
             id="book-search"
+            value={query}
+            onChange={() => setQuery(value)}
             />
           <button type="submit">Submit</button>
         </div>
@@ -59,7 +72,16 @@ export default function Search() {
         ? <Loading />
         : bookSearchResults?.length
         ? <div className={styles.bookList}>
-            {/* TODO: render BookPreview components for each search result here based on bookSearchResults */}
+            {/* TODO: render BookPreview components for each search result here based on bookSearchResults */
+              bookSearchResults.map(() => (
+                <BookPreview 
+                  title = {items.volumeInfo.title}
+                  authors = {items.volumeInfo.authors}
+                  thumbnail = {items.imagelinks.thumbnail}
+                  previewLink = {items.previewLink}
+                /> 
+              ))
+            }
           </div>
         : <NoResults
           {...{inputRef, inputDivRef, previousQuery}}
