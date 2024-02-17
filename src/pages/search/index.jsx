@@ -8,7 +8,7 @@ export default function Search() {
   // stores value of input field
   const [query, setQuery] = useState("React")
   // compare to query to prevent repeat API calls
-  const [previousQuery, setPreviousQuery] = useState()
+  const [previousQuery, setPreviousQuery] = useState() 
   // used to prevent rage clicks on form submits
   const [fetching, setFetching] = useState(false)
 
@@ -17,10 +17,11 @@ export default function Search() {
   // Use a query of "React"
   useEffect(() => {
     async function getBooks(query) {
+      
       const res = await fetch(`https://www.googleapis.com/books/v1/volumes?langRestrict=en&maxResults=16&q=`+{query})
       const data = await res.json()
-      setBookSearchResults(data)
-      console.log(bookSearchResults)
+      setBookSearchResults(data) 
+      console.log(bookSearchResults) 
       setFetching(false)
     }
     getBooks()
@@ -74,12 +75,12 @@ export default function Search() {
         : bookSearchResults?.length
         ? <div className={styles.bookList}>
             {/* TODO: render BookPreview components for each search result here based on bookSearchResults */
-              bookSearchResults.map(() => (
-                <BookPreview 
-                  title = {items.volumeInfo.title}
-                  authors = {items.volumeInfo.authors}
-                  thumbnail = {items.imagelinks.thumbnail}
-                  previewLink = {items.previewLink}
+              bookSearchResults.map((item, index) => (
+                <BookPreview key={index}
+                  title = {item.volumeInfo.title}
+                  authors = {item.volumeInfo.authors}
+                  thumbnail = {item.thumbnail}
+                  previewLink = {item.previewLink}
                 /> 
               ))
             }

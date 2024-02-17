@@ -6,7 +6,11 @@ export default function BookPreview({
   thumbnail,
   previewLink
 }) {
+
+  console.log(title)
+  
   return (
+    
     <a target="_BLANK" href={previewLink} style={{textDecoration: 'none'}} className={styles.preview}>
       <img
         src={thumbnail ? thumbnail : "https://via.placeholder.com/128x190?text=NO COVER"}
