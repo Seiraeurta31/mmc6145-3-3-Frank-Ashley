@@ -19,9 +19,11 @@ export default function Search() {
 
    useEffect(() => {
     async function getBooks(query) {
-      console.log(`query:  ${query}`)
+      setFetching(true)
       const res = await fetch("https://www.googleapis.com/books/v1/volumes?langRestrict=en&maxResults=16&q=" + query)
       const data = await res.json()
+      setFetching(false)
+      setBookSearchResults(data.items) 
     } 
     getBooks(query)
   }, [])
@@ -65,7 +67,7 @@ export default function Search() {
             name="book-search"
             id="book-search"
             value={query}
-            onChange={e => setQuery(e.target.value)}
+            onChange={e => setQuery(e.target.value.trim())}
             />
           <button type="submit">Submit</button>
         </div>
