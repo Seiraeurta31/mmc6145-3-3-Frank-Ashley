@@ -12,23 +12,19 @@ export default function Search() {
   // used to prevent rage clicks on form submits
   const [fetching, setFetching] = useState(false)
 
+
   // TODO: When the Search Page loads, use useEffect to fetch data from:
   // https://www.googleapis.com/books/v1/volumes?langRestrict=en&maxResults=16&q=YOUR_QUERY
   // Use a query of "React"
-  useEffect(() => {
-    async function getBooks(query) {
-      
-      const res = await fetch(`https://www.googleapis.com/books/v1/volumes?langRestrict=en&maxResults=16&q=${query}`)
-      const data = await res.json()
-      setBookSearchResults(data) 
-      // console.log(bookSearchResults) 
-      setFetching(false)
-    } 
-    if(query == "")return
-    getBooks()
 
-    console.log (bookSearchResults)
-  }, [query])
+   useEffect(() => {
+    async function getBooks(query) {
+      console.log(`query:  ${query}`)
+      const res = await fetch("https://www.googleapis.com/books/v1/volumes?langRestrict=en&maxResults=16&q=" + query)
+      const data = await res.json()
+    } 
+    getBooks(query)
+  }, [])
 
   // TODO: Write a submit handler for the form that fetches data from:
   // https://www.googleapis.com/books/v1/volumes?langRestrict=en&maxResults=16&q=YOUR_QUERY
@@ -37,17 +33,20 @@ export default function Search() {
   // fetch has not finished
   // the query is unchanged
 
-
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault()
-    if (fetching || query == previousQuery)
+
+    if (fetching || query === previousQuery || query === "")
       return
+
     setFetching(true)
-    setQuery(inputRef.current)
-    getBooks(query)
+    const res = await fetch(`https://www.googleapis.com/books/v1/volumes?langRestrict=en&maxResults=16&q=${query}`)
+    const data = await res.json()
+   
+    setBookSearchResults(data.items) 
+    setFetching(false)
+    setPreviousQuery(query)
   }
-
-
 
   const inputRef = useRef()
   const inputDivRef = useRef()
@@ -66,7 +65,7 @@ export default function Search() {
             name="book-search"
             id="book-search"
             value={query}
-            onChange={(e) => setQuery(e.value)}
+            onChange={e => setQuery(e.target.value)}
             />
           <button type="submit">Submit</button>
         </div>
@@ -77,17 +76,18 @@ export default function Search() {
         // else show the NoResults component
         fetching
         ? <Loading />
-        : bookSearchResults?.length
+        : bookSearchResults?.length 
         ? <div className={styles.bookList}>
             {/* TODO: render BookPreview components for each search result here based on bookSearchResults */
-              bookSearchResults.items.volumeInfo.map((book) => (
+              bookSearchResults.map((book) => (
                 <BookPreview key={book.id}
-                  title = {book.title}
-                  authors = {book[authors]}
-                  thumbnail = {book.imageLinks.thumbnail}
-                  previewLink = {book.previewLink}
+                  title = {book.volumeInfo.title}
+                  authors = {book.volumeInfo.authors}
+                  thumbnail = {book.volumeInfo.imageLinks?.thumbnail}
+                  previewLink = {book.volumeInfo.previewLink}
                 /> 
               ))
+              
             }
           </div>
         : <NoResults
