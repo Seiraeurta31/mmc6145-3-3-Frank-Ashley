@@ -21,11 +21,13 @@ export default function Search() {
       const res = await fetch(`https://www.googleapis.com/books/v1/volumes?langRestrict=en&maxResults=16&q=${query}`)
       const data = await res.json()
       setBookSearchResults(data) 
-      console.log(bookSearchResults) 
+      // console.log(bookSearchResults) 
       setFetching(false)
     } 
     if(query == "")return
     getBooks()
+
+    console.log (bookSearchResults)
   }, [query])
 
   // TODO: Write a submit handler for the form that fetches data from:
@@ -35,6 +37,7 @@ export default function Search() {
   // fetch has not finished
   // the query is unchanged
 
+
   function handleSubmit(e) {
     e.preventDefault()
     if (fetching || query == previousQuery)
@@ -43,6 +46,8 @@ export default function Search() {
     setQuery(inputRef.current)
     getBooks(query)
   }
+
+
 
   const inputRef = useRef()
   const inputDivRef = useRef()
@@ -61,7 +66,7 @@ export default function Search() {
             name="book-search"
             id="book-search"
             value={query}
-            onChange={(e) => setQuery(value)}
+            onChange={(e) => setQuery(e.value)}
             />
           <button type="submit">Submit</button>
         </div>
@@ -75,12 +80,12 @@ export default function Search() {
         : bookSearchResults?.length
         ? <div className={styles.bookList}>
             {/* TODO: render BookPreview components for each search result here based on bookSearchResults */
-              bookSearchResults.map((item, index) => (
-                <BookPreview key={index}
-                  title = {item[volumeInfo.title]}
-                  authors = {item[volumeInfo[authors]]}
-                  thumbnail = {item.thumbnail}
-                  previewLink = {item.previewLink}
+              bookSearchResults.items.volumeInfo.map((book) => (
+                <BookPreview key={book.id}
+                  title = {book.title}
+                  authors = {book[authors]}
+                  thumbnail = {book.imageLinks.thumbnail}
+                  previewLink = {book.previewLink}
                 /> 
               ))
             }
