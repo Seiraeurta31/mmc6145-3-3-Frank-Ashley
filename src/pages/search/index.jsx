@@ -13,17 +13,24 @@ export default function Search() {
   const [fetching, setFetching] = useState(false)
 
 
+  //Helper function for API fetch to reduce redundancy
+  async function getAPIBookData() {
+    setFetching(true)
+    const res = await fetch(`https://www.googleapis.com/books/v1/volumes?langRestrict=en&maxResults=16&q=${query}`)
+    const data = await res.json()
+   
+    setBookSearchResults(data.items) 
+    setPreviousQuery(query)
+    setFetching(false)
+  }
+
   // TODO: When the Search Page loads, use useEffect to fetch data from:
   // https://www.googleapis.com/books/v1/volumes?langRestrict=en&maxResults=16&q=YOUR_QUERY
   // Use a query of "React"
 
    useEffect(() => {
     async function getBooks(query) {
-      setFetching(true)
-      const res = await fetch("https://www.googleapis.com/books/v1/volumes?langRestrict=en&maxResults=16&q=" + query)
-      const data = await res.json()
-      setFetching(false)
-      setBookSearchResults(data.items) 
+      getAPIBookData() //uses default value of query (initially set to "React")
     } 
     getBooks(query)
   }, [])
@@ -40,14 +47,7 @@ export default function Search() {
 
     if (fetching || query === previousQuery || query === "")
       return
-
-    setFetching(true)
-    const res = await fetch(`https://www.googleapis.com/books/v1/volumes?langRestrict=en&maxResults=16&q=${query}`)
-    const data = await res.json()
-   
-    setBookSearchResults(data.items) 
-    setFetching(false)
-    setPreviousQuery(query)
+    getAPIBookData() //uses query value set from user input
   }
 
   const inputRef = useRef()
